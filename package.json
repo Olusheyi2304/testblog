@@ -4,12 +4,17 @@
   "version": "1.0.0",
   "main": "package.json",
   "license": "UNLICENSED",
+  "workspaces": [
+    "web"
+  ],
   "scripts": {
-    "build": "sanity build",
-    "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy",
-    "dev": "sanity dev",
-    "start": "sanity start"
+    "dev": "concurrently \"npm run dev:studio\" \"npm run dev:web\"",
+    "dev:studio": "sanity dev",
+    "dev:web": "npm run dev --prefix web",
+    "build:studio": "sanity build",
+    "build:web": "npm run build --prefix web",
+    "install:web": "npm install --prefix web",
+    "deploy": "sanity deploy"
   },
   "keywords": [
     "sanity"
@@ -24,6 +29,7 @@
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/react": "^19.2.14",
+    "concurrently": "^9.2.1",
     "eslint": "^9.28",
     "prettier": "^3.5",
     "typescript": "^5.8"
