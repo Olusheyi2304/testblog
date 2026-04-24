@@ -1,87 +1,54 @@
 import { client, urlFor } from "@/lib/sanity";
 import { PortableText } from "@portabletext/react";
-import { Calendar, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Post } from "@/types/post";
 
+// This makes the page update when you edit in Sanity
 export const revalidate = 60;
 
-async function getPost(slug: string): Promise<Post> {
-  const query = `*[_type == "post" && slug.current == $slug][0] {
+export default async function PostPage({ params }: { params: { slug: string } }) {
+  // 1. Fetch the data for THIS specific slug
+  const query = `*[_type == "post" && slug.current == $slug][0]{
     title,
-    publishedAt,
     mainImage,
     body,
+    publishedAt,
     "authorName": author->name,
-    "authorImage": author->image,
-    "categories": categories[]->title
+    "authorImage": author->image
   }`;
-  const post = await client.fetch(query, { slug });
-  return post;
-}
 
-const components = {
-  types: {
-    image: ({ value }: { value: any }) => (
-      <img
-        src={urlFor(value).width(800).url()}
-        alt="Blog content image"
-        className="article-content-image"
-      />
-    ),
-  },
-};
+  const post = await client.fetch(query, { slug: params.slug });
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug);
-
+  // 2. If no post is found, show this
   if (!post) {
-    notFound();
+    return <div className="container">Post not found</div>;
   }
 
   return (
     <article className="container animate-fade-in">
-      <Link href="/" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '2rem' }}>
-        <ArrowLeft size={16} /> Back to feed
-      </Link>
+      {/* Back Button */}
+      <Link href="/" className="back-button">← Back to Feed</Link>
 
-      <header className="article-header">
-        {post.categories?.[0] && (
-          <span className="post-category">{post.categories[0]}</span>
+      {/* Main Image */}
+      <div className="post-header">
+        {post.mainImage && (
+          <img
+            src={urlFor(post.mainImage).width(1200).url()}
+            alt={post.title}
+            className="full-post-image glass"
+          />
         )}
-        <h1 className="article-title">{post.title}</h1>
         
-        <div className="article-meta">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {post.authorImage ? (
-              <img 
-                src={urlFor(post.authorImage).width(100).url()} 
-                alt={post.authorName} 
-                className="author-avatar"
-              />
-            ) : (
-              <div className="author-avatar"><User size={16} /></div>
-            )}
-            <span className="author-name">{post.authorName}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: 0.5 }}>
-            <Calendar size={16} />
-            <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
-          </div>
+        <h1 className="post-page-title">{post.title}</h1>
+        
+        <div className="post-meta">
+          <span>By {post.authorName}</span> •
+          <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
         </div>
-      </header>
+      </div>
 
-      {post.mainImage && (
-        <img 
-          src={urlFor(post.mainImage).width(1200).url()} 
-          alt={post.title} 
-          className="article-main-image"
-        />
-      )}
-
+      {/* The Actual Content (The Story) */}
       <div className="portable-text-content">
-        <PortableText value={post.body} components={components} />
+        <PortableText value={post.body} />
       </div>
     </article>
   );
