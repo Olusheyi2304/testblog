@@ -3,6 +3,8 @@ import { client, urlFor } from "@/lib/sanity";
 import { User } from "lucide-react";
 import { Post } from "@/types/post";
 
+export const revalidate = 60; // This tells the site to check for updates every 60 seconds
+
 async function getPosts(): Promise<Post[]> {
   const query = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
     title,

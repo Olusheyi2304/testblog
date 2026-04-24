@@ -5,6 +5,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Post } from "@/types/post";
 
+export const revalidate = 60;
+
 async function getPost(slug: string): Promise<Post> {
   const query = `*[_type == "post" && slug.current == $slug][0] {
     title,
