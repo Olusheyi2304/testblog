@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function PostExtras() {
   const [scroll, setScroll] = useState(0);
@@ -38,7 +39,7 @@ export default function PostExtras() {
         <button className="share-btn" onClick={() => share("linkedin")} title="Share on LinkedIn">in</button>
         <button className="share-btn" onClick={() => {
           navigator.clipboard.writeText(window.location.href);
-          alert("Link copied!");
+          toast.success("Link copied to clipboard!");
         }} title="Copy Link">🔗</button>
       </div>
     </>

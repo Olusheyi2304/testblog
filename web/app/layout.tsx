@@ -1,6 +1,7 @@
 import "./globals.css";
 import Link from "next/link";
 import { client } from "@/lib/sanity";
+import { Toaster } from "sonner";
 
 export const revalidate = 60;
 
@@ -12,6 +13,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body>
+        <Toaster richColors position="top-center" />
         <div className="container">
           <nav className="nav-header fade-in">
             <Link href="/" className="logo">JOLLOF<span>.COM</span></Link>
