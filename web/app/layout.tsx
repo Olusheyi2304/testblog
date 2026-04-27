@@ -22,13 +22,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <Link 
                   key={index} 
                   href={link.url} 
-                  style={{ 
-                    color: '#fff', 
-                    textDecoration: 'none', 
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
-                    opacity: 0.8
-                  }}
+                  className="nav-link"
                 >
                   {link.label}
                 </Link>

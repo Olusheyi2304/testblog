@@ -4,13 +4,12 @@ import Link from "next/link";
 export const revalidate = 60;
 
 export default async function Home() {
-  // We fetch title, slug, image, and the title of the first category
   const posts = await client.fetch(`*[_type == "post" && defined(slug.current)] | order(publishedAt desc){
     title,
     slug,
     mainImage,
     "categoryName": categories[0]->title,
-    publishedAt
+    "excerpt": pt::text(body)
   }`);
 
   return (
@@ -34,16 +33,15 @@ export default async function Home() {
                 className="card-image" 
               />
             ) : (
-              <div className="card-image" style={{ background: '#111' }} />
+              <div className="card-image" style={{ background: '#e5e7eb' }} />
             )}
             <div className="card-content">
-              <span className="card-category">{post.categoryName || "Editorial"}</span>
               <h2 className="card-title">{post.title}</h2>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.5rem' }}>
-                <span style={{ color: 'var(--accent)', fontSize: '0.85rem', fontWeight: '600' }}>Read Article —</span>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                  {new Date(post.publishedAt).toLocaleDateString()}
-                </span>
+              <p className="card-excerpt">
+                {post.excerpt ? (post.excerpt.length > 120 ? post.excerpt.substring(0, 120) + '...' : post.excerpt) : "Click to read more about this topic..."}
+              </p>
+              <div className="read-more-btn">
+                Read More
               </div>
             </div>
           </Link>
