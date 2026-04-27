@@ -1,39 +1,22 @@
 import { client } from "@/lib/sanity";
 import { PortableText } from "@portabletext/react";
-import Link from "next/link";
 
-export const revalidate = 60;
-
-export default async function GenericPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function SimplePage({ params }: any) {
   const { slug } = await params;
 
-  // Fetch the page data from Sanity
-  const query = `*[_type == "page" && slug.current == $slug][0]{
-    title,
-    content
-  }`;
+  // This finds the page you just wrote in Sanity
+  const pageData = await client.fetch(
+    `*[_type == "page" && slug.current == $slug][0]`, 
+    { slug }
+  );
 
-  const pageData = await client.fetch(query, { slug });
-
-  if (!pageData) {
-    return (
-      <div style={{ padding: "100px", textAlign: "center", color: "white" }}>
-        <h1>404 - Page Not Found</h1>
-        <Link href="/" style={{ color: "var(--accent)" }}>Back to Jollof.com</Link>
-      </div>
-    );
-  }
+  if (!pageData) return <div style={{padding: '100px', color: 'white'}}>Page Not Found</div>;
 
   return (
-    <main className="fade-in" style={{ padding: "80px 0" }}>
-      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-        <h1 style={{ fontSize: "4rem", fontWeight: 800, marginBottom: "40px", textAlign: "center" }}>
-          {pageData.title}
-        </h1>
-        
-        <div className="portable-text" style={{ background: 'var(--glass)', padding: '40px', borderRadius: '30px', border: '1px solid var(--glass-border)' }}>
-          <PortableText value={pageData.content} />
-        </div>
+    <main className="container fade-in" style={{ padding: '100px 0' }}>
+      <h1 style={{ fontSize: '4rem', marginBottom: '40px' }}>{pageData.title}</h1>
+      <div className="portable-text glass" style={{ padding: '40px', borderRadius: '30px' }}>
+        <PortableText value={pageData.content} />
       </div>
     </main>
   );
